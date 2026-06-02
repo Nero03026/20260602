@@ -32,15 +32,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # 可以根據你的專案調整 Node 版本
-          cache: 'npm'     # 自動快取 npm 依賴，加快後續打包速度
+          node-version: 20
+          cache: 'npm'
+          # ✨ 修正：如果 package-lock.json 在根目錄，直接填 package-lock.json 即可
+          cache-dependency-path: 'package-lock.json'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # 安裝專案依賴項目
+      # ✨ 優化：在 CI/CD 環境建議使用 npm ci，它會嚴格根據 package-lock.json 安裝，速度更快更穩定
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       # 打包編譯 Vue 專案
       - name: Build Vue Project
@@ -50,7 +52,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # 注意：如果是舊版 Vue CLI 可能是 ./dist，Vite 預設也是 ./dist
           path: ./dist
 
   # 2. 部屬工作 (Deploy)
